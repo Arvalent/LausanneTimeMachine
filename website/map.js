@@ -31,13 +31,42 @@ function highlightMarker(position) {
     map.addLayer(greenMarker);
     on = true;
 }
-var marker = L.marker([46.53, 6.63]).addTo(map).on('click', function(e) {
-    map.setView(e.latlng);
-    console.log(on)
-    highlightMarker(e.latlng);
+
+function fillSelectedFields(street, forname, name, job) {
+    document.getElementById("selected_street").innerHTML = street;
+    document.getElementById("selected_forname").innerHTML = forname;
+    document.getElementById("selected_name").innerHTML = name;
+    document.getElementById("selected_job").innerHTML = job;
+}
+
+
+var data;
+$.getJSON("JanMaxime.github.io/data.json", function(json) {
+    data = json
 });
 
-var marker2 = L.marker([46.531, 6.63]).addTo(map).on('click', function(e) {
-    map.setView(e.latlng);
-    highlightMarker(e.latlng);
-});
+var job;
+var street;
+var forname;
+var name_;
+
+function custom_search() {
+    var street_name = $("#street_name").val()
+    console.log(street_name);
+    for (var i = 0; i < data.length; i++) {
+        console.log(data[i]["street"])
+        if (data[i]["street"] == street_name) {
+            job = data[i]["job"]
+            street = data[i]["street"]
+            name_ = data[i]["name"]
+            forname = data[i]["forname"]
+            L.marker(data[i]["position"]).addTo(map).on('click', function(e) {
+                map.setView(e.latlng);
+                highlightMarker(e.latlng);
+                fillSelectedFields(street, forname, name_, job);
+            });
+        }
+    }
+}
+
+document.getElementById("searchButton").addEventListener("click", custom_search, false)
