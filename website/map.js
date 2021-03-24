@@ -32,11 +32,12 @@ function highlightMarker(position) {
     on = true;
 }
 
-function fillSelectedFields(street, forname, name, job) {
-    document.getElementById("selected_street").innerHTML = street;
-    document.getElementById("selected_forname").innerHTML = forname;
-    document.getElementById("selected_name").innerHTML = name;
-    document.getElementById("selected_job").innerHTML = job;
+function fillSelectedFields(latlng) {
+    key = latlng["lat"].toString() + latlng["lng"].toString();
+    document.getElementById("selected_street").innerHTML = markers_data.get(key)[0];
+    document.getElementById("selected_forname").innerHTML = markers_data.get(key)[1];
+    document.getElementById("selected_name").innerHTML = markers_data.get(key)[2];
+    document.getElementById("selected_job").innerHTML = markers_data.get(key)[3];
 }
 
 
@@ -51,7 +52,7 @@ var forname;
 var name_;
 var layerGroup = L.layerGroup().addTo(map);
 
-var first = true
+markers_data = new Map();
 
 function custom_search() {
     layerGroup.clearLayers();
@@ -74,14 +75,12 @@ function custom_search() {
             (data[i]["name"] == input_owner_name || input_owner_name == "") &&
             (data[i]["forname"] == input_owner_forname || input_owner_forname == "") &&
             (data[i]["job"] == input_job || input_job == "")) {
-            job = data[i]["job"]
-            street = data[i]["street"]
-            name_ = data[i]["name"]
-            forname = data[i]["forname"]
+
+            markers_data.set(data[i]["position"][0].toString() + data[i]["position"][1].toString(), [data[i]["street"], data[i]["name"], data[i]["forname"], data[i]["job"]])
             L.marker(data[i]["position"]).addTo(layerGroup).on('click', function(e) {
                 map.setView(e.latlng);
                 highlightMarker(e.latlng);
-                fillSelectedFields(street, forname, name_, job);
+                fillSelectedFields(e.latlng);
             });
         }
     }
