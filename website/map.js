@@ -41,7 +41,7 @@ function fillSelectedFields(street, forname, name, job) {
 
 
 var data;
-$.getJSON("JanMaxime.github.io/data.json", function(json) {
+$.getJSON("https://JanMaxime.github.io/data.json", function(json) {
     data = json
 });
 
@@ -49,18 +49,36 @@ var job;
 var street;
 var forname;
 var name_;
+var layerGroup = L.layerGroup().addTo(map);
+
+var first = true
 
 function custom_search() {
-    var street_name = $("#street_name").val()
-    console.log(street_name);
+    layerGroup.clearLayers();
+    layerGroup = L.layerGroup().addTo(map);
+
+    var input_street = $("#input_street").val()
+    var input_owner_forname = $("#input_owner_forname").val()
+    var input_owner_name = $("#input_owner_name").val()
+    var input_job = $("#input_job").val()
+
+    /**
+        console.log(input_street)
+        console.log(input_owner_forname)
+        console.log(input_owner_name)
+        console.log(input_job)
+     */
+
     for (var i = 0; i < data.length; i++) {
-        console.log(data[i]["street"])
-        if (data[i]["street"] == street_name) {
+        if ((data[i]["street"] == input_street || input_street == "") &&
+            (data[i]["name"] == input_owner_name || input_owner_name == "") &&
+            (data[i]["forname"] == input_owner_forname || input_owner_forname == "") &&
+            (data[i]["job"] == input_job || input_job == "")) {
             job = data[i]["job"]
             street = data[i]["street"]
             name_ = data[i]["name"]
             forname = data[i]["forname"]
-            L.marker(data[i]["position"]).addTo(map).on('click', function(e) {
+            L.marker(data[i]["position"]).addTo(layerGroup).on('click', function(e) {
                 map.setView(e.latlng);
                 highlightMarker(e.latlng);
                 fillSelectedFields(street, forname, name_, job);
